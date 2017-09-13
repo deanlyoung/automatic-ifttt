@@ -48,10 +48,11 @@ app.get('/', function(req, res) {
 
 app.post('/webhook', function(req, res) {
 	var payload = req.body;
+	var currentTime = Date.now();
 	
 	console.log('Webhook received of type \'' + payload.type + '\'')
 	
-	if (payload.type == 'trip:finished') {
+	if (payload.type == 'trip:finished' && (currentTime - payload.trip.end_time < 300000)) {
 		console.log('Checking remaining fuel in vehicle');
 		
 		request.get({
