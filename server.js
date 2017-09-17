@@ -52,6 +52,8 @@ app.post('/webhook', function(req, res) {
 	
 	console.log('Time right now: ' + currentTime);
 	
+	console.log('Vehicle ID: ' + payload.vehicle.id);
+	
 	console.log('Webhook received of type \'' + payload.type + '\'');
 	
 	if (payload.type == 'trip:finished' && (currentTime - payload.trip.end_time < 300000)) {
@@ -85,7 +87,9 @@ app.post('/webhook', function(req, res) {
 				});
 			});
 			
-			client.set('lastFuelReading', body.fuel_level_percent);
+			if (body.fuel_level_percent != null) {
+				client.set('lastFuelReading', body.fuel_level_percent);
+			}
 		});
 	} else {
 		console.log('Ignored');
