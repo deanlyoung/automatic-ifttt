@@ -52,7 +52,7 @@ app.post('/webhook', function(req, res) {
 	
 	console.log('Webhook received of type \'' + payload.type + '\'')
 	
-	if (payload.type == 'trip:finished' && (currentTime - payload.trip.end_time < 300000)) {
+	if (payload.type == 'trip:finished' && (currentTime - payload.trip.ended_at < 300000)) {
 		console.log('Checking remaining fuel in vehicle');
 		
 		request.get({
