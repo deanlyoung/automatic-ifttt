@@ -14,6 +14,7 @@ var lastFuelReading = 100.0;
 app.get('/', function(req, res) {
 	client.get('lastFuelReading', function(err, lastFuelReading) {
 		if (lastFuelReading == null) {
+			console.log ('Unable to retrieve lastFuelReading, setting to 100%');
 			lastFuelReading = 100.0;
 		}
 		
@@ -50,7 +51,7 @@ app.post('/webhook', function(req, res) {
 	var payload = req.body;
 	var currentTime = Date.now();
 	
-	console.log('Time right now: ' + (currentTime - payload.trip.end_time));
+	console.log('Time diff: ' + (currentTime - payload.trip.end_time));
 	
 	console.log('Vehicle ID: ' + payload.vehicle.id);
 	
@@ -66,15 +67,12 @@ app.post('/webhook', function(req, res) {
 			},
 			json: true
 		}, function(error, response, body) {
-			console.log('Fuel level at ' + body.fuel_level_percent + '%, above threshold');
-			
-			client.get('lastFuelReading', function(err, lastFuelReading) {
-				if (lastFuelReading == null) {
-					console.log ('Unable to retrieve lastFuelReading.');
-					lastFuelReading = 100.0;
-				}
+			if (body.fuel_level_percent == null) {
+				console.log('Could not find current fuel percentage, skipping IFTTT');
+			} else {
+				console.log('Fuel level at ' + body.fuel_level_percent + '%');
 				
-				console.log('Sending IFTTT event to Maker channel');
+				console.log('Sending IFTTT event to Maker service');
 				
 				request.post('https://maker.ifttt.com/trigger/automatic-ifttt/with/key/' + process.env.IFTTT_SECRET_KEY, {
 					form: {
@@ -85,10 +83,16 @@ app.post('/webhook', function(req, res) {
 				}, function(err, response, body) {
 					console.log('Succeeded');
 				});
-			});
-			
-			if (body.fuel_level_percent != null) {
-				client.set('lastFuelReading', body.fuel_level_percent);
+				
+				client.get('lastFuelReading', function(err, lastFuelReading) {
+					if (lastFuelReading == null) {
+						console.log ('Unable to retrieve lastFuelReading, setting to 100%');
+						lastFuelReading = 100.0;
+					} else {
+						console.log ('Uupdating lastFuelReading to ' + body.fuel_level_percent + '%');
+						client.set('lastFuelReading', body.fuel_level_percent);
+					}
+				});
 			}
 		});
 	} else {
