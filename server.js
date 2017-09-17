@@ -50,7 +50,7 @@ app.post('/webhook', function(req, res) {
 	var payload = req.body;
 	var currentTime = Date.now();
 	
-	console.log('Time right now: ' + currentTime);
+	console.log('Time right now: ' + (currentTime - payload.trip.end_time));
 	
 	console.log('Vehicle ID: ' + payload.vehicle.id);
 	
