@@ -62,7 +62,7 @@ app.post('/webhook', function(req, res) {
 	
 	console.log('Webhook received of type \'' + payload.type + '\'');
 	
-	if (payload.type == 'trip:finished' && payload.trip.id != lastTripId) {
+	if (payload.type == 'trip:finished') {
 		console.log('Checking remaining fuel in vehicle');
 		
 		request.get({
@@ -75,36 +75,40 @@ app.post('/webhook', function(req, res) {
 			if (body.fuel_level_percent == null) {
 				console.log('Could not find current fuel percentage, skipping IFTTT');
 			} else {
-				console.log('Fuel level at ' + body.fuel_level_percent + '%');
-				
-				console.log('Sending IFTTT event to Maker service');
-				
-				request.post('https://maker.ifttt.com/trigger/automatic-ifttt/with/key/' + process.env.IFTTT_SECRET_KEY, {
-					form: {
-						value1: body.fuel_level_percent,
-						value2: payload.location.lat,
-						value3: payload.location.lon
-					}
-				}, function(err, response, body) {
-					console.log('Succeeded');
-				});
-				
-				client.get('lastFuelReading', function(err, lastFuelReading) {
-					if (lastFuelReading == null) {
-						console.log ('Unable to retrieve lastFuelReading, setting to 100%');
-						lastFuelReading = 100.0;
-					} else {
-						console.log ('Updating lastFuelReading to ' + body.fuel_level_percent + '%');
-						client.set('lastFuelReading', body.fuel_level_percent);
-						
-						console.log ('Updating lastTripId to ' + payload.trip.id);
-						client.set('lastTripId', payload.trip.id);
-					}
-				});
+				if (payload.trip.id != lastTripId) {
+					console.log('Fuel level at ' + body.fuel_level_percent + '%');
+					
+					console.log('New trip.id, sending fuel percent to IFTTT Maker service');
+					
+					request.post('https://maker.ifttt.com/trigger/automatic-ifttt/with/key/' + process.env.IFTTT_SECRET_KEY, {
+						form: {
+							value1: body.fuel_level_percent,
+							value2: payload.location.lat,
+							value3: payload.location.lon
+						}
+					}, function(err, response, body) {
+						console.log('Succeeded');
+					});
+					
+					client.get('lastFuelReading', function(err, lastFuelReading) {
+						if (lastFuelReading == null) {
+							console.log ('Unable to retrieve lastFuelReading, setting to 100%');
+							lastFuelReading = 100.0;
+						} else {
+							console.log ('Updating lastFuelReading to ' + body.fuel_level_percent + '%');
+							client.set('lastFuelReading', body.fuel_level_percent);
+							
+							console.log ('Updating lastTripId to ' + payload.trip.id);
+							client.set('lastTripId', payload.trip.id);
+						}
+					});
+				} else {
+					console.log('Repeat trip.id, skipping IFTTT');
+				}
 			}
 		});
 	} else {
-		console.log('Not type of trip:finished or a repeat trip.id');
+		console.log('Not type of trip:finished');
 	}
 	
 	res.status(200).end();
