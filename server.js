@@ -51,61 +51,63 @@ app.get('/', function(req, res) {
 app.post('/webhook', function(req, res) {
 	var payload = req.body;
 	
-	client.get('lastTripId', function(err, lastTripId) {
-		if (lastTripId == null) {
-			console.log ('Unable to retrieve lastTripId, setting to T');
-			lastTripId = 'T';
-		}
-	});
-	
 	console.log('Vehicle ID: ' + payload.vehicle.id);
 	
 	console.log('Webhook received of type \'' + payload.type + '\'');
 	
 	if (payload.type == 'trip:finished') {
-		console.log('Checking remaining fuel in vehicle');
+		console.log('Trip ID: ' + payload.trip.id);
 		
-		request.get({
-			uri: 'https://api.automatic.com/vehicle/' + payload.vehicle.id + '/',
-			headers: {
-				Authorization: 'Bearer ' + process.env.AUTOMATIC_ACCESS_TOKEN
-			},
-			json: true
-		}, function(error, response, body) {
-			if (body.fuel_level_percent == null) {
-				console.log('Could not find current fuel percentage, skipping IFTTT');
-			} else {
-				if (payload.trip.id != lastTripId) {
-					console.log('Fuel level at ' + body.fuel_level_percent + '%');
-					
-					console.log('New trip.id, sending fuel percent to IFTTT Maker service');
-					
-					request.post('https://maker.ifttt.com/trigger/automatic-ifttt/with/key/' + process.env.IFTTT_SECRET_KEY, {
-						form: {
-							value1: body.fuel_level_percent,
-							value2: payload.location.lat,
-							value3: payload.location.lon
-						}
-					}, function(err, response, body) {
-						console.log('Succeeded');
-					});
-					
-					client.get('lastFuelReading', function(err, lastFuelReading) {
-						if (lastFuelReading == null) {
-							console.log ('Unable to retrieve lastFuelReading, setting to 100%');
-							lastFuelReading = 100.0;
-						} else {
-							console.log ('Updating lastFuelReading to ' + body.fuel_level_percent + '%');
-							client.set('lastFuelReading', body.fuel_level_percent);
-							
-							console.log ('Updating lastTripId to ' + payload.trip.id);
-							client.set('lastTripId', payload.trip.id);
-						}
-					});
-				} else {
-					console.log('Repeat trip.id, skipping IFTTT');
-				}
+		client.get('lastTripId', function(err, lastTripId) {
+			if (lastTripId == null) {
+				console.log ('Unable to retrieve lastTripId, setting to T');
+				lastTripId = 'T';
 			}
+			
+			console.log('Checking remaining fuel in vehicle');
+			
+			request.get({
+				uri: 'https://api.automatic.com/vehicle/' + payload.vehicle.id + '/',
+				headers: {
+					Authorization: 'Bearer ' + process.env.AUTOMATIC_ACCESS_TOKEN
+				},
+				json: true
+			}, function(error, response, body) {
+				if (body.fuel_level_percent == null) {
+					console.log('Could not find current fuel percentage, skipping IFTTT');
+				} else {
+					if (payload.trip.id != lastTripId) {
+						console.log('Fuel level at ' + body.fuel_level_percent + '%');
+						
+						console.log('New trip.id, sending fuel percent to IFTTT Maker service');
+						
+						request.post('https://maker.ifttt.com/trigger/automatic-ifttt/with/key/' + process.env.IFTTT_SECRET_KEY, {
+							form: {
+								value1: body.fuel_level_percent,
+								value2: payload.location.lat,
+								value3: payload.location.lon
+							}
+						}, function(err, response, body) {
+							console.log('Succeeded');
+						});
+						
+						client.get('lastFuelReading', function(err, lastFuelReading) {
+							if (lastFuelReading == null) {
+								console.log ('Unable to retrieve lastFuelReading, setting to 100%');
+								lastFuelReading = 100.0;
+							} else {
+								console.log ('Updating lastFuelReading to ' + body.fuel_level_percent + '%');
+								client.set('lastFuelReading', body.fuel_level_percent);
+								
+								console.log ('Updating lastTripId to ' + payload.trip.id);
+								client.set('lastTripId', payload.trip.id);
+							}
+						});
+					} else {
+						console.log('Repeat trip.id, skipping IFTTT');
+					}
+				}
+			});
 		});
 	} else {
 		console.log('Not type of trip:finished');
