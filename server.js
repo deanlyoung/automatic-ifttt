@@ -56,8 +56,7 @@ app.post('/webhook', function(req, res) {
 			console.log ('Unable to retrieve lastTripId, setting to T');
 			lastTripId = 'T';
 		} else {
-			console.log ('Updating lastTripId to ' + payload.trip.id);
-			client.set('lastTripId', payload.trip.id);
+			lastTripId = payload.trip.id;
 		}
 	});
 	
