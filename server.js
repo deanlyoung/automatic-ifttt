@@ -99,6 +99,9 @@ app.post('/webhook', function(req, res) {
 					} else {
 						console.log ('Updating lastFuelReading to ' + body.fuel_level_percent + '%');
 						client.set('lastFuelReading', body.fuel_level_percent);
+						
+						console.log ('Updating lastTripId to ' + payload.trip.id);
+						client.set('lastTripId', payload.trip.id);
 					}
 				});
 			}
