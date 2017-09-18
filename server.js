@@ -55,8 +55,6 @@ app.post('/webhook', function(req, res) {
 		if (lastTripId == null) {
 			console.log ('Unable to retrieve lastTripId, setting to T');
 			lastTripId = 'T';
-		} else {
-			lastTripId = payload.trip.id;
 		}
 	});
 	
@@ -106,7 +104,7 @@ app.post('/webhook', function(req, res) {
 			}
 		});
 	} else {
-		console.log('Ignored');
+		console.log('Not type of trip:finished or a repeat trip.id');
 	}
 	
 	res.status(200).end();
