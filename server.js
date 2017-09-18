@@ -10,6 +10,7 @@ app.use(bodyParser.json());
 var client = redis.createClient(process.env.REDIS_URL);
 
 var lastFuelReading = 100.0;
+var lastTripId = 'T';
 
 app.get('/', function(req, res) {
 	client.get('lastFuelReading', function(err, lastFuelReading) {
@@ -49,15 +50,22 @@ app.get('/', function(req, res) {
 
 app.post('/webhook', function(req, res) {
 	var payload = req.body;
-	var currentTime = Date.now();
 	
-	console.log('Time diff: ' + (currentTime - payload.trip.end_time));
+	client.get('lastTripId', function(err, lastTripId) {
+		if (lastTripId == null) {
+			console.log ('Unable to retrieve lastTripId, setting to T');
+			lastTripId = 'T';
+		} else {
+			console.log ('Updating lastTripId to ' + payload.trip.id);
+			client.set('lastTripId', payload.trip.id);
+		}
+	});
 	
 	console.log('Vehicle ID: ' + payload.vehicle.id);
 	
 	console.log('Webhook received of type \'' + payload.type + '\'');
 	
-	if (payload.type == 'trip:finished' && (currentTime - payload.trip.end_time < 300000)) {
+	if (payload.type == 'trip:finished' && payload.trip.id != lastTripId) {
 		console.log('Checking remaining fuel in vehicle');
 		
 		request.get({
@@ -89,7 +97,7 @@ app.post('/webhook', function(req, res) {
 						console.log ('Unable to retrieve lastFuelReading, setting to 100%');
 						lastFuelReading = 100.0;
 					} else {
-						console.log ('Uupdating lastFuelReading to ' + body.fuel_level_percent + '%');
+						console.log ('Updating lastFuelReading to ' + body.fuel_level_percent + '%');
 						client.set('lastFuelReading', body.fuel_level_percent);
 					}
 				});
