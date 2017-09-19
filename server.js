@@ -60,6 +60,8 @@ app.post('/webhook', function(req, res) {
 				lastTripId = 'T';
 			}
 			
+			console.log('TripID: ' + payload.trip.id);
+			
 			if (payload.trip.id != lastTripId) {
 				console.log('New trip.id, checking remaining fuel in vehicle');
 				
