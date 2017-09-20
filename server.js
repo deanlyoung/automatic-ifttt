@@ -56,9 +56,11 @@ app.post('/webhook', function(req, res) {
 	if (payload.type == 'trip:finished') {
 		client.get('lastTripId', function(err, lastTripId) {
 			if (lastTripId == null) {
-				console.log ('Unable to retrieve lastTripId, setting to T');
+				console.log('Unable to retrieve lastTripId, setting to T');
 				lastTripId = 'T';
 			}
+			
+			console.log('TripId: ' + payload.trip.id);
 			
 			if (payload.trip.id != lastTripId) {
 				console.log('New trip.id, checking remaining fuel in vehicle');
@@ -73,26 +75,28 @@ app.post('/webhook', function(req, res) {
 					if (body.fuel_level_percent == null) {
 						console.log('Could not find current fuel percentage, skipping IFTTT');
 					} else {
-						console.log('Fuel level at ' + body.fuel_level_percent + '%, sending to IFTTT Maker service');
-						
-						request.post('https://maker.ifttt.com/trigger/automatic-ifttt/with/key/' + process.env.IFTTT_SECRET_KEY, {
-							form: {
-								value1: body.fuel_level_percent,
-								value2: payload.location.lat,
-								value3: payload.location.lon
-							}
-						}, function(err, response, body) {
-							console.log('IFTTT Success!');
-						});
-						
 						client.get('lastFuelReading', function(err, lastFuelReading) {
 							if (lastFuelReading == null) {
-								console.log ('Unable to retrieve lastFuelReading, setting to 100%');
+								console.log ('Unable to retrieve lastFuelReading, setting to 100% and skipping IFTTT');
 								lastFuelReading = 100.0;
 								client.set('lastFuelReading', lastFuelReading);
-							} else {
+							} else if (body.fuel_level_percent != lastFuelReading) {
+								console.log('Fuel level at ' + body.fuel_level_percent + '%, sending to IFTTT Maker service');
+								
+								request.post('https://maker.ifttt.com/trigger/automatic-ifttt/with/key/' + process.env.IFTTT_SECRET_KEY, {
+									form: {
+										value1: body.fuel_level_percent,
+										value2: payload.location.lat,
+										value3: payload.location.lon
+									}
+								}, function(err, response, body) {
+									console.log('IFTTT Success!');
+								});
+								
 								console.log ('Updating lastFuelReading to ' + body.fuel_level_percent + '%');
 								client.set('lastFuelReading', body.fuel_level_percent);
+							} else {
+								console.log ('Same fuel level %, skipping IFTTT');
 							}
 						});
 					}
