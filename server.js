@@ -60,11 +60,22 @@ app.post('/webhook', function(req, res) {
 				lastTripId = 'T';
 			}
 			
+<<<<<<< HEAD
 			console.log('TripId: ' + payload.trip.id);
 			
 			if (payload.trip.id != lastTripId) {
 				console.log('New trip.id, checking remaining fuel in vehicle');
 				
+=======
+			console.log('TripID: ' + payload.trip.id);
+			
+			if (payload.trip.id == process.env.TESTING_TRIP_ID || payload.trip.id != lastTripId) {
+				if (payload.trip.id == process.env.TESTING_TRIP_ID) {
+					console.log('Testing trip.id, checking remaining fuel in vehicle');
+				} else {
+					console.log('New trip.id, checking remaining fuel in vehicle');
+				}
+>>>>>>> origin/master
 				request.get({
 					uri: 'https://api.automatic.com/vehicle/' + payload.vehicle.id + '/',
 					headers: {
