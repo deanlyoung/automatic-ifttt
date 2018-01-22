@@ -56,7 +56,7 @@ app.get('/redirect', (req, res) => {
     // This is where you could save the `token` to a database for later use
     req.session.token = oauth2.accessToken.create(result);
     
-    res.redirect('/welcome');
+    res.redirect('/');
   }
 
   oauth2.authCode.getToken({
@@ -83,6 +83,17 @@ app.get('/', function(req, res) {
 			lastFuelReading = 100.0;
 		}
 		
+		var loginstate = '';
+		
+		if (req.session.token) {
+    			// Display token to authenticated user
+    			console.log('Automatic access token', req.session.token.token.access_token);
+    			loginstate = '<p>You are logged in.<br>Access Token: ' + req.session.token.token.access_token + '</p>'
+  		} else {
+    			// No token, so redirect to login
+    			loginstate = '<a href=\'/auth\' target=\'_blank\'><img src=\'https://d1qbqqxx54sk5g.cloudfront.net/website/img/developer/buttons/signin-xlarge@2x.271d1595432a.png\'/></a>'
+  		}
+		
 		var result = '<!DOCTYPE html>' +
 		'<html>' +
 		'<head>' +
@@ -98,7 +109,7 @@ app.get('/', function(req, res) {
 		'</style>' +
 		'</head>' +
 		'<body>' +
-		'<a href=\'/auth\' target=\'_blank\'><img src=\'https://d1qbqqxx54sk5g.cloudfront.net/website/img/developer/buttons/signin-xlarge@2x.271d1595432a.png\'/></a>' +
+		loginstate +
 		'<div class=\'outer\'>' +
 		'<div class=\'middle\'>' +
 		'<div class=\'inner\'>' +
