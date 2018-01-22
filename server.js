@@ -77,8 +77,6 @@ app.get('/welcome', (req, res) => {
 
 app.get('/', function(req, res) {
 	
-	res.send('<a href="/auth">Log in with Automatic</a>');
-	
 	client.get('lastFuelReading', function(err, lastFuelReading) {
 		if (lastFuelReading == null) {
 			console.log ('Unable to retrieve lastFuelReading, setting to 100%');
