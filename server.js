@@ -88,10 +88,10 @@ app.get('/', function(req, res) {
 		if (req.session.token) {
     			// Display token to authenticated user
     			console.log('Automatic access token', req.session.token.token.access_token);
-    			loginstate = '<p>You are logged in.<br>Access Token: ' + req.session.token.token.access_token + '</p>'
+    			loginstate = '<p class=\'loggedin\'>You are logged in.<br>Access Token: ' + req.session.token.token.access_token + '</p>'
   		} else {
     			// No token, so redirect to login
-    			loginstate = '<a href=\'/auth\' target=\'_blank\'><img src=\'https://d1qbqqxx54sk5g.cloudfront.net/website/img/developer/buttons/signin-xlarge@2x.271d1595432a.png\'/></a>'
+    			loginstate = '<a href=\'/auth\'><img src=\'https://d1qbqqxx54sk5g.cloudfront.net/website/img/developer/buttons/signin-xlarge@2x.271d1595432a.png\'/></a>'
   		}
 		
 		var result = '<!DOCTYPE html>' +
@@ -102,6 +102,7 @@ app.get('/', function(req, res) {
 		'body { margin: 0; font-family: Consolas, Courier, Monospace; font-size: 100px; text-align: center; }' +
 		'h1 { margin: 0; }' +
 		'p { margin: 0; }' +
+		'.loggedin { font-size: 12px; }' +
 		'a { margin-top: 25px; display: block; }' +
 		'.outer { display: table; position: absolute; height: 100%; width: 100%; }' +
 		'.middle { display: table-cell; vertical-align: middle; }' +
