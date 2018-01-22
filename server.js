@@ -55,7 +55,7 @@ app.get('/redirect', (req, res) => {
     // Attach `token` to the user's session for later use
     // This is where you could save the `token` to a database for later use
     req.session.token = oauth2.accessToken.create(result);
-
+    
     res.redirect('/welcome');
   }
 
@@ -91,6 +91,7 @@ app.get('/', function(req, res) {
 		'body { margin: 0; font-family: Consolas, Courier, Monospace; font-size: 100px; }' +
 		'h1 { margin: 0; }' +
 		'p { margin: 0; }' +
+		'a { margin-top: 25px; }' +
 		'.outer { display: table; position: absolute; height: 100%; width: 100%; }' +
 		'.middle { display: table-cell; vertical-align: middle; }' +
 		'.inner { margin-left: auto; margin-right: auto; text-align: center; }' +
@@ -98,6 +99,7 @@ app.get('/', function(req, res) {
 		'</head>' +
 		'<body>' +
 		'<div class=\'outer\'>' +
+		'<a href=\'/auth\' target=\'_blank\'><img src=\'https://d1qbqqxx54sk5g.cloudfront.net/website/img/developer/buttons/signin-xlarge@2x.271d1595432a.png\'/></a>' +
 		'<div class=\'middle\'>' +
 		'<div class=\'inner\'>' +
 		'<h1>' + lastFuelReading + '%</h1>' +
@@ -136,7 +138,7 @@ app.post('/webhook', function(req, res) {
 				request.get({
 					uri: 'https://api.automatic.com/vehicle/' + payload.vehicle.id + '/',
 					headers: {
-						Authorization: 'Bearer ' + process.env.AUTOMATIC_ACCESS_TOKEN
+						Authorization: 'Bearer ' + req.session.token || process.env.AUTOMATIC_ACCESS_TOKEN
 					},
 					json: true
 				}, function(error, response, body) {
