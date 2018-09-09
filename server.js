@@ -93,7 +93,7 @@ app.get('/', function(req, res) {
     			loginstate = '<p class=\'loggedin\'>You are logged in.<br>Access Token: ' + req.session.token.token.access_token + '</p>'
   		} else {
     			// No token, so redirect to login
-    			loginstate = '<a href=\'/auth\'><img src=\'https://developer.automatic.com/_assets/images/resources/auth-buttons/auth_automatic-connect-hover-32-01e4181455.svg\'/></a>'
+    			loginstate = '<a href=\'/auth\'><img src=\'https://developer.automatic.com/_assets/images/resources/auth-buttons/auth_automatic-connect-hover-32-01e4181455.svg\' height=\'32px\' /></a>'
   		}
 		
 		var result = '<!DOCTYPE html>' +
