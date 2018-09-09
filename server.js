@@ -55,6 +55,11 @@ app.get('/redirect', (req, res) => {
     // Attach `token` to the user's session for later use
     // This is where you could save the `token` to a database for later use
     req.session.token = oauth2.accessToken.create(result);
+	
+	var sessionToken = req.session.token.token.access_token;
+	sessionToken.send(process.env.AUTOMATIC_ACCESS_TOKEN);
+	var refreshToken = req.session.token.token.refresh_token;
+	refreshToken.send(process.env.AUTOMATIC_REFRESH_TOKEN);
     
     res.redirect('/');
   }
@@ -68,10 +73,6 @@ app.get('/welcome', (req, res) => {
   if (req.session.token) {
     // Display token to authenticated user
     console.log('Automatic access token', req.session.token.token.access_token);
-	var sessionToken = req.session.token.token.access_token;
-	sessionToken.send(process.env.AUTOMATIC_ACCESS_TOKEN);
-	var refreshToken = req.session.token.token.refresh_token;
-	refreshToken.send(process.env.AUTOMATIC_REFRESH_TOKEN);
     res.send('You are logged in.<br>Access Token: ' + req.session.token.token.access_token);
   } else {
     // No token, so redirect to login
