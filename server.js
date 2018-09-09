@@ -87,13 +87,9 @@ app.get('/', function(req, res) {
 		
 		var loginstate = '';
 		
-		var lastId
+		var lastId = '?';
 		client.get('lastTripId', function(err, lastId) {
-			if (lastId == null) {
-				lastId = 'T';
-			} else {
-				lastId = lastId;
-			}
+			lastId = lastId;
 		});
 		
 		if (req.session.token) {
@@ -116,9 +112,9 @@ app.get('/', function(req, res) {
 		'body { margin: 0; font-family: Consolas, Courier, Monospace; font-size: 100px; text-align: center; }' +
 		'h1 { margin: 0; }' +
 		'p { margin: 0; }' +
-		'.loggedin { font-size: 12px; margin: 25px 0px 25px 0; display: table-row; vertical-align: middle; height: 85px; width: 100%; }' +
-		'.regular { font-size: 12px; margin: 25px 0px 25px 0; display: table-row; vertical-align: middle; height: 85px; width: 100%; }' +
-		'a { margin: 25px 0 25px 0; display: table-row; vertical-align: middle; height: 85px; width: 100%; }' +
+		'.loggedin { font-size: 12px; margin: 25px 0px 25px 0; display: table-cell; vertical-align: middle; height: 85px; width: 100%; }' +
+		'.regular { font-size: 12px; margin: 25px 0px 25px 0; display: table-cell; vertical-align: middle; height: 85px; width: 100%; }' +
+		'a { margin: 25px 0 25px 0; display: table-cell; vertical-align: middle; height: 85px; width: 100%; }' +
 		'.outer { display: table; position: absolute; height: 100%; width: 100%; }' +
 		'.middle { display: table-row; }' +
 		'.inner { margin-left: auto; margin-right: auto; text-align: center; display: table-cell; vertical-align: middle; }' +
@@ -151,7 +147,7 @@ app.post('/webhook', function(req, res) {
 	
 	if (payload.type == 'trip:finished') {
 		client.get('lastTripId', function(err, lastTripId) {
-			if (lastTripId == null) {
+			if (!lastTripId) {
 				console.log('Unable to retrieve lastTripId, setting to T');
 				lastTripId = 'T';
 			}
