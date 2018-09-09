@@ -56,6 +56,9 @@ app.get('/redirect', (req, res) => {
     // This is where you could save the `token` to a database for later use
     req.session.token = oauth2.accessToken.create(result);
     console.log(req.session.token);
+	client.set('refreshToken', req.session.token.token.refresh_token);
+	var art = process.env.AUTOMATIC_REFRESH_TOKEN;
+	art.set(req.session.token.token.refresh_token);
 	
     res.redirect('/');
   }
