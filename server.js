@@ -91,7 +91,7 @@ app.get('/', function(req, res) {
 		
 		client.get('lastTripId', function(err, lastTripId) {
 			if ('lastTripId' == null ) {
-				lastTripId = '?'
+				lastTripId = '?';
 			} else {
 				lastTripId = lastTripId;
 			}
@@ -135,7 +135,7 @@ app.get('/', function(req, res) {
 		'</div>' +
 		'</div>' +
 		'<p class=\'regular\'>' +
-		lastId +
+		lastTripId +
 		'</p>' +
 		'</div>' +
 		'</body>' +
