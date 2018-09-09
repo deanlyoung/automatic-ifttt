@@ -79,6 +79,16 @@ app.get('/welcome', (req, res) => {
 
 app.get('/', function(req, res) {
 	
+	var lastTripId;
+	
+	client.get('lastTripId', function(err, lastTripId) {
+		if ('lastTripId' == null ) {
+			lastTripId = '?';
+		} else {
+			lastTripId = lastTripId;
+		}
+	});
+	
 	client.get('lastFuelReading', function(err, lastFuelReading) {
 		if (lastFuelReading == null) {
 			console.log ('Unable to retrieve lastFuelReading, setting to 100%');
@@ -86,16 +96,6 @@ app.get('/', function(req, res) {
 		}
 		
 		var loginstate = '';
-		
-		var lastTripId;
-		
-		client.get('lastTripId', function(err, lastTripId) {
-			if ('lastTripId' == null ) {
-				lastTripId = '?';
-			} else {
-				lastTripId = lastTripId;
-			}
-		});
 		
 		if (req.session.token) {
     			// Display token to authenticated user
@@ -107,39 +107,39 @@ app.get('/', function(req, res) {
   		}
 		
 		var result = '<!DOCTYPE html>' +
-		'<html>' +
-		'<head>' +
-		'<title>' +
-		lastFuelReading +
-		'% Fuel Remaining</title>' +
-		'<style>' +
-		'html { margin: 0; }' +
-		'body { margin: 0; font-family: Consolas, Courier, Monospace; font-size: 100px; text-align: center; }' +
-		'h1 { margin: 0; }' +
-		'p { margin: 0; }' +
-		'.loggedin { font-size: 12px; margin: 25px 0px 25px 0; display: table-cell; vertical-align: middle; height: 85px; width: 100%; }' +
-		'.regular { font-size: 12px; margin: 25px 0px 25px 0; display: table-cell; vertical-align: middle; height: 85px; width: 100%; }' +
-		'a { margin: 25px 0 25px 0; display: table-cell; vertical-align: middle; height: 85px; width: 100%; }' +
-		'.outer { display: table; position: absolute; height: 100%; width: 100%; }' +
-		'.middle { display: table-row; }' +
-		'.inner { margin-left: auto; margin-right: auto; text-align: center; display: table-cell; vertical-align: middle; }' +
-		'</style>' +
-		'</head>' +
-		'<body>' +
-		'<div class=\'outer\'>' +
-		loginstate +
-		'<div class=\'middle\'>' +
-		'<div class=\'inner\'>' +
-		'<h1>' + lastFuelReading + '%</h1>' +
-		'<p>fuel remaining</p>' +
-		'</div>' +
-		'</div>' +
-		'<p class=\'regular\'>' +
-		lastTripId +
-		'</p>' +
-		'</div>' +
-		'</body>' +
-		'</html>';
+					 '<html>' +
+					 '<head>' +
+					 '<title>' +
+					 lastFuelReading +
+					 '% Fuel Remaining</title>' +
+					 '<style>' +
+					 'html { margin: 0; }' +
+					 'body { margin: 0; font-family: Consolas, Courier, Monospace; font-size: 100px; text-align: center; }' +
+					 'h1 { margin: 0; }' +
+					 'p { margin: 0; }' +
+					 '.loggedin { font-size: 12px; margin: 25px 0px 25px 0; display: table-cell; vertical-align: middle; height: 85px; width: 100%; }' +
+					 '.regular { font-size: 12px; margin: 25px 0px 25px 0; display: table-cell; vertical-align: middle; height: 85px; width: 100%; }' +
+					 'a { margin: 25px 0 25px 0; display: table-cell; vertical-align: middle; height: 85px; width: 100%; }' +
+					 '.outer { display: table; position: absolute; height: 100%; width: 100%; }' +
+					 '.middle { display: table-row; }' +
+					 '.inner { margin-left: auto; margin-right: auto; text-align: center; display: table-cell; vertical-align: middle; }' +
+					 '</style>' +
+					 '</head>' +
+					 '<body>' +
+					 '<div class=\'outer\'>' +
+					 loginstate +
+					 '<div class=\'middle\'>' +
+					 '<div class=\'inner\'>' +
+					 '<h1>' + lastFuelReading + '%</h1>' +
+					 '<p>fuel remaining</p>' +
+					 '</div>' +
+					 '</div>' +
+					 '<p class=\'regular\'>' +
+					 lastTripId +
+					 '</p>' +
+					 '</div>' +
+					 '</body>' +
+					 '</html>';
 		
 		res.send(result);
 	});
