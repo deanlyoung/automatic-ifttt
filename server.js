@@ -113,33 +113,17 @@ app.get('/', function(req, res) {
 					console.log('error: ' + error);
 					console.log('response: ' + response);
 					console.log('body: ' + body);
-					if (error) {
-						const code = req.query.code;
-						
-						function saveToken(error, result) {
-							req.session.token = oauth2.accessToken.create(result);
-							console.log(req.session.token);
-							
-							client.set('refreshToken', req.session.token.token.refresh_token);
-							client.get('refreshToken', function(err, refreshToken) {
-								console.log('refresh token: ', refreshToken);
-							});
-							client.set('accessToken', req.session.token.token.access_token);
-							client.get('accessToken', function(err, accessToken) {
-								console.log('access token: ', accessToken);
-							});
-						}
-					
-						oauth2.authCode.getToken({
-							code: code
-						}, saveToken);
+					if (!error) {
+						accessToken = accessToken;
+					} else {
+						accessToken = null;
 					}
 				});
 				
-				if (req.session.token) {
+				if (accessToken) {
 		    			// Display token to authenticated user
-		    			console.log('Automatic access token', req.session.token.token.access_token);
-		    			loginstate = '<p class=\'loggedin\'>You are logged in.<br>Access Token: ' + req.session.token.token.access_token + '</p>'
+		    			console.log('Automatic access token', accessToken);
+		    			loginstate = '<p class=\'loggedin\'>You are logged in.<br>Access Token: ' + accessToken + '</p>'
 		  		} else {
 		    			// No token, so redirect to login
 		    			loginstate = '<a href=\'/auth\'><img src=\'https://developer.automatic.com/_assets/images/resources/auth-buttons/auth_automatic-connect-hover-32-01e4181455.svg\' height=\'32px\' /></a>'
