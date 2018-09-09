@@ -113,6 +113,27 @@ app.get('/', function(req, res) {
 					console.log('error: ' + error);
 					console.log('response: ' + response);
 					console.log('body: ' + body);
+					if (error) {
+						const code = req.query.code;
+						
+						function saveToken(error, result) {
+							req.session.token = oauth2.accessToken.create(result);
+							console.log(req.session.token);
+							
+							client.set('refreshToken', req.session.token.token.refresh_token);
+							client.get('refreshToken', function(err, refreshToken) {
+								console.log('refresh token: ', refreshToken);
+							});
+							client.set('accessToken', req.session.token.token.access_token);
+							client.get('accessToken', function(err, accessToken) {
+								console.log('access token: ', accessToken);
+							});
+						}
+					
+						oauth2.authCode.getToken({
+							code: code
+						}, saveToken);
+					}
 				});
 				
 				if (req.session.token) {
