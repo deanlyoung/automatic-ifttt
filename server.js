@@ -58,7 +58,13 @@ app.get('/redirect', (req, res) => {
     req.session.token = oauth2.accessToken.create(result);
     console.log(req.session.token);
 	client.set('refreshToken', req.session.token.token.refresh_token);
+	client.get('refreshToken', function(err, refreshToken) {
+		console.log('refresh token: ', refreshToken);
+	}
 	client.set('accessToken', req.session.token.token.access_token);
+	client.get('accessToken', function(err, accessToken) {
+		console.log('access token: ', accessToken);
+	}
 	
     res.redirect('/');
   }
