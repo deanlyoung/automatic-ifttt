@@ -102,7 +102,7 @@ app.get('/', function(req, res) {
 			var loginstate = '';
 			
 			request.get({
-				uri: 'https://api.automatic.com/vehicle/' + payload.vehicle.id + '/',
+				uri: 'https://api.automatic.com/vehicle//',
 				headers: {
 					Authorization: 'Bearer ' + accessToken || req.session.token.token.access_token
 				},
@@ -166,6 +166,7 @@ app.post('/webhook', function(req, res) {
 	var payload = req.body;
 	
 	console.log('Webhook received of type \'' + payload.type + '\'');
+	console.log('vehicle id: ' + payload.vehicle.id);
 	
 	if (payload.type == 'trip:finished') {
 		client.get('lastTripId', function(err, lastTripId) {
