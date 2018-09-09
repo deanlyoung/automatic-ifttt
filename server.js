@@ -12,7 +12,7 @@ var client = redis.createClient(process.env.REDIS_URL);
 
 var lastFuelReading = 100.0;
 var lastTripId = 'T';
-var vehicel_id = process.env.VEHICLE_ID;
+var vehicle_id = process.env.VEHICLE_ID;
 
 // Add your automatic client id and client secret here or as environment variables
 const AUTOMATIC_CLIENT_ID = process.env.AUTOMATIC_CLIENT_ID || 'your-automatic-client-id';
