@@ -117,8 +117,8 @@ app.get('/', function(req, res) {
 		'h1 { margin: 0; }' +
 		'p { margin: 0; }' +
 		'.loggedin { font-size: 12px; }' +
-		'.regular { font-size: 12px; margin: 25px 0px 25px 0; display: table-cell; vertical-align: middle; height: 85px; }' +
-		'a { margin: 25px 0 25px 0; display: table-cell; vertical-align: middle; height: 85px; }' +
+		'.regular { font-size: 12px; margin: 25px 0px 25px 0; display: table-cell; vertical-align: middle; height: 85px; width: 100%; }' +
+		'a { margin: 25px 0 25px 0; display: table-cell; vertical-align: middle; height: 85px; width: 100%; }' +
 		'.outer { display: table; position: absolute; height: 100%; width: 100%; }' +
 		'.middle { display: table-cell; vertical-align: middle; }' +
 		'.inner { margin-left: auto; margin-right: auto; text-align: center; }' +
