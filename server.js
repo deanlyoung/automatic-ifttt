@@ -34,7 +34,7 @@ app.use(session({
   secret: 'keyboard cat',
   resave: false,
   saveUninitialized: true,
-  cookie: { secure: auto }
+  cookie: { secure: true }
 }));
 
 // Initial page redirecting to Automatic's oAuth page
