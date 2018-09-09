@@ -87,6 +87,15 @@ app.get('/', function(req, res) {
 		
 		var loginstate = '';
 		
+		var lastId
+		client.get('lastTripId', function(err, lastId) {
+			if (lastId == null) {
+				lastId = 'T';
+			} else {
+				lastId = lastId;
+			}
+		});
+		
 		if (req.session.token) {
     			// Display token to authenticated user
     			console.log('Automatic access token', req.session.token.token.access_token);
@@ -99,27 +108,34 @@ app.get('/', function(req, res) {
 		var result = '<!DOCTYPE html>' +
 		'<html>' +
 		'<head>' +
+		'<title>' +
+		lastFuelReading +
+		'% Fuel Remaining</title>' +
 		'<style>' +
 		'html { margin: 0; }' +
 		'body { margin: 0; font-family: Consolas, Courier, Monospace; font-size: 100px; text-align: center; }' +
 		'h1 { margin: 0; }' +
 		'p { margin: 0; }' +
 		'.loggedin { font-size: 12px; }' +
-		'a { margin-top: 25px; display: block; }' +
+		'.regular { font-size: 12px; margin: 25px 0px 25px 0; display: table-cell; vertical-align: middle; height: 85px; }' +
+		'a { margin: 25px 0 25px 0; display: table-cell; vertical-align: middle; height: 85px; }' +
 		'.outer { display: table; position: absolute; height: 100%; width: 100%; }' +
 		'.middle { display: table-cell; vertical-align: middle; }' +
 		'.inner { margin-left: auto; margin-right: auto; text-align: center; }' +
 		'</style>' +
 		'</head>' +
 		'<body>' +
-		loginstate +
 		'<div class=\'outer\'>' +
+		loginstate +
 		'<div class=\'middle\'>' +
 		'<div class=\'inner\'>' +
 		'<h1>' + lastFuelReading + '%</h1>' +
 		'<p>fuel remaining</p>' +
 		'</div>' +
 		'</div>' +
+		'<p class=\'regular\'>' +
+		lastId +
+		'</p>' +
 		'</div>' +
 		'</body>' +
 		'</html>';
@@ -152,7 +168,7 @@ app.post('/webhook', function(req, res) {
 				request.get({
 					uri: 'https://api.automatic.com/vehicle/' + payload.vehicle.id + '/',
 					headers: {
-						Authorization: 'Bearer ' + req.session.token.token.access_token || process.env.AUTOMATIC_ACCESS_TOKEN
+						Authorization: 'Bearer ' + process.env.AUTOMATIC_ACCESS_TOKEN || req.session.token.token.access_token
 					},
 					json: true
 				}, function(error, response, body) {
