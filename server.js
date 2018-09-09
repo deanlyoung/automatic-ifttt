@@ -70,6 +70,8 @@ app.get('/welcome', (req, res) => {
     console.log('Automatic access token', req.session.token.token.access_token);
 	var sessionToken = req.session.token.token.access_token;
 	sessionToken.send(process.env.AUTOMATIC_ACCESS_TOKEN);
+	var refreshToken = req.session.token.token.refresh_token;
+	refreshToken.send(process.env.AUTOMATIC_REFRESH_TOKEN);
     res.send('You are logged in.<br>Access Token: ' + req.session.token.token.access_token);
   } else {
     // No token, so redirect to login
