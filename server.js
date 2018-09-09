@@ -60,11 +60,11 @@ app.get('/redirect', (req, res) => {
 	client.set('refreshToken', req.session.token.token.refresh_token);
 	client.get('refreshToken', function(err, refreshToken) {
 		console.log('refresh token: ', refreshToken);
-	}
+	});
 	client.set('accessToken', req.session.token.token.access_token);
 	client.get('accessToken', function(err, accessToken) {
 		console.log('access token: ', accessToken);
-	}
+	});
 	
     res.redirect('/');
   }
