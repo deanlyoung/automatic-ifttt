@@ -33,7 +33,8 @@ const authorizationUri = oauth2.authCode.authorizeURL({
 app.use(session({
   secret: 'keyboard cat',
   resave: false,
-  saveUninitialized: true
+  saveUninitialized: true,
+  cookie: { secure: auto }
 }));
 
 // Initial page redirecting to Automatic's oAuth page
