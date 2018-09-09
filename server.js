@@ -87,9 +87,14 @@ app.get('/', function(req, res) {
 		
 		var loginstate = '';
 		
-		var lastTripId = '?';
+		var lastTripId;
+		
 		client.get('lastTripId', function(err, lastTripId) {
-			lastTripId = lastTripId;
+			if ('lastTripId' == null ) {
+				lastTripId = '?'
+			} else {
+				lastTripId = lastTripId;
+			}
 		});
 		
 		if (req.session.token) {
