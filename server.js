@@ -100,64 +100,65 @@ app.get('/', function(req, res) {
 			}
 			
 			var loginstate = '';
-			
-			request.get({
-				uri: 'https://api.automatic.com/vehicle//',
-				headers: {
-					Authorization: 'Bearer ' + accessToken || req.session.token.token.access_token
-				},
-				json: true
-			}, function(error, response, body) {
-				console.log('error: ' + error);
-				console.log('response: ' + response);
-				console.log('body: ' + body);
+			client.get('accessToken', function(err, accessToken) {
+				request.get({
+					uri: 'https://api.automatic.com/vehicle/1/',
+					headers: {
+						Authorization: 'Bearer ' + accessToken || req.session.token.token.access_token
+					},
+					json: true
+				}, function(error, response, body) {
+					console.log('error: ' + error);
+					console.log('response: ' + response);
+					console.log('body: ' + body);
+				});
+				
+				if (req.session.token) {
+		    			// Display token to authenticated user
+		    			console.log('Automatic access token', req.session.token.token.access_token);
+		    			loginstate = '<p class=\'loggedin\'>You are logged in.<br>Access Token: ' + req.session.token.token.access_token + '</p>'
+		  		} else {
+		    			// No token, so redirect to login
+		    			loginstate = '<a href=\'/auth\'><img src=\'https://developer.automatic.com/_assets/images/resources/auth-buttons/auth_automatic-connect-hover-32-01e4181455.svg\' height=\'32px\' /></a>'
+		  		}
+				
+				var result = '<!DOCTYPE html>' +
+							 '<html>' +
+							 '<head>' +
+							 '<title>' +
+							 lastFuelReading +
+							 '% Fuel Remaining</title>' +
+							 '<style>' +
+							 'html { margin: 0; }' +
+							 'body { margin: 0; font-family: Consolas, Courier, Monospace; font-size: 100px; text-align: center; }' +
+							 'h1 { margin: 0; }' +
+							 'p { margin: 0; }' +
+							 '.loggedin { font-size: 12px; margin: 25px 0px 25px 0; display: table-cell; vertical-align: middle; height: 85px; width: 100%; }' +
+							 '.regular { font-size: 12px; margin: 25px 0px 25px 0; display: table-cell; vertical-align: middle; height: 85px; width: 100%; }' +
+							 'a { margin: 25px 0 25px 0; display: table-cell; vertical-align: middle; height: 85px; width: 100%; }' +
+							 '.outer { display: table; position: absolute; height: 100%; width: 100%; }' +
+							 '.middle { display: table-row; }' +
+							 '.inner { margin-left: auto; margin-right: auto; text-align: center; display: table-cell; vertical-align: middle; }' +
+							 '</style>' +
+							 '</head>' +
+							 '<body>' +
+							 '<div class=\'outer\'>' +
+							 loginstate +
+							 '<div class=\'middle\'>' +
+							 '<div class=\'inner\'>' +
+							 '<h1>' + lastFuelReading + '%</h1>' +
+							 '<p>fuel remaining</p>' +
+							 '</div>' +
+							 '</div>' +
+							 '<p class=\'regular\'>' +
+							 lastTripId +
+							 '</p>' +
+							 '</div>' +
+							 '</body>' +
+							 '</html>';
+				
+				res.send(result);
 			});
-			
-			if (req.session.token) {
-	    			// Display token to authenticated user
-	    			console.log('Automatic access token', req.session.token.token.access_token);
-	    			loginstate = '<p class=\'loggedin\'>You are logged in.<br>Access Token: ' + req.session.token.token.access_token + '</p>'
-	  		} else {
-	    			// No token, so redirect to login
-	    			loginstate = '<a href=\'/auth\'><img src=\'https://developer.automatic.com/_assets/images/resources/auth-buttons/auth_automatic-connect-hover-32-01e4181455.svg\' height=\'32px\' /></a>'
-	  		}
-			
-			var result = '<!DOCTYPE html>' +
-						 '<html>' +
-						 '<head>' +
-						 '<title>' +
-						 lastFuelReading +
-						 '% Fuel Remaining</title>' +
-						 '<style>' +
-						 'html { margin: 0; }' +
-						 'body { margin: 0; font-family: Consolas, Courier, Monospace; font-size: 100px; text-align: center; }' +
-						 'h1 { margin: 0; }' +
-						 'p { margin: 0; }' +
-						 '.loggedin { font-size: 12px; margin: 25px 0px 25px 0; display: table-cell; vertical-align: middle; height: 85px; width: 100%; }' +
-						 '.regular { font-size: 12px; margin: 25px 0px 25px 0; display: table-cell; vertical-align: middle; height: 85px; width: 100%; }' +
-						 'a { margin: 25px 0 25px 0; display: table-cell; vertical-align: middle; height: 85px; width: 100%; }' +
-						 '.outer { display: table; position: absolute; height: 100%; width: 100%; }' +
-						 '.middle { display: table-row; }' +
-						 '.inner { margin-left: auto; margin-right: auto; text-align: center; display: table-cell; vertical-align: middle; }' +
-						 '</style>' +
-						 '</head>' +
-						 '<body>' +
-						 '<div class=\'outer\'>' +
-						 loginstate +
-						 '<div class=\'middle\'>' +
-						 '<div class=\'inner\'>' +
-						 '<h1>' + lastFuelReading + '%</h1>' +
-						 '<p>fuel remaining</p>' +
-						 '</div>' +
-						 '</div>' +
-						 '<p class=\'regular\'>' +
-						 lastTripId +
-						 '</p>' +
-						 '</div>' +
-						 '</body>' +
-						 '</html>';
-			
-			res.send(result);
 		});
 	});
 });
