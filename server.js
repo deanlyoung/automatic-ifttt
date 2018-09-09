@@ -55,13 +55,6 @@ app.get('/redirect', (req, res) => {
     // Attach `token` to the user's session for later use
     // This is where you could save the `token` to a database for later use
     req.session.token = oauth2.accessToken.create(result);
-	
-	var sessionToken = req.session.token.token.access_token;
-	var aat = process.env.AUTOMATIC_ACCESS_TOKEN;
-	aat.send(sessionToken);
-	var refreshToken = req.session.token.token.refresh_token;
-	var art = process.env.AUTOMATIC_REFRESH_TOKEN;
-	art.send(refreshToken);
     
     res.redirect('/');
   }
