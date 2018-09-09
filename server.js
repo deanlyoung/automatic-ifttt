@@ -12,6 +12,7 @@ var client = redis.createClient(process.env.REDIS_URL);
 
 var lastFuelReading = 100.0;
 var lastTripId = 'T';
+var vehicel_id = process.env.VEHICLE_ID;
 
 // Add your automatic client id and client secret here or as environment variables
 const AUTOMATIC_CLIENT_ID = process.env.AUTOMATIC_CLIENT_ID || 'your-automatic-client-id';
@@ -100,9 +101,10 @@ app.get('/', function(req, res) {
 			}
 			
 			var loginstate = '';
+			
 			client.get('accessToken', function(err, accessToken) {
 				request.get({
-					uri: 'https://api.automatic.com/vehicle/1/',
+					uri: 'https://api.automatic.com/vehicle/' + vehicle_id + '/',
 					headers: {
 						Authorization: 'Bearer ' + accessToken || req.session.token.token.access_token
 					},
