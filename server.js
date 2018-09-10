@@ -135,6 +135,10 @@ app.get('/', function(req, res) {
 							 '<title>' +
 							 lastFuelReading +
 							 '% Fuel Remaining</title>' +
+							 '<link rel=\'apple-touch-icon\' href=\'https://store-images.s-microsoft.com/image/apps.17557.13510798887693184.f17a0156-31bb-4cd8-a528-bce93ba02099.a38af496-4d9b-4831-828e-f942c6126042?mode=crop&q=90&h=270&w=270&format=jpg&background=%23000000\'>' +
+							 '<link rel=\'apple-touch-icon\' sizes=\'152x152\' href=\'https://store-images.s-microsoft.com/image/apps.17557.13510798887693184.f17a0156-31bb-4cd8-a528-bce93ba02099.a38af496-4d9b-4831-828e-f942c6126042?mode=crop&q=90&h=152&w=152&format=jpg&background=%23000000\'>' +
+							 '<link rel=\'apple-touch-icon\' sizes=\'180x180\' href=\'https://store-images.s-microsoft.com/image/apps.17557.13510798887693184.f17a0156-31bb-4cd8-a528-bce93ba02099.a38af496-4d9b-4831-828e-f942c6126042?mode=crop&q=90&h=180&w=180&format=jpg&background=%23000000\'>' +
+							 '<link rel=\'apple-touch-icon\' sizes=\'167x167\' href=\'https://store-images.s-microsoft.com/image/apps.17557.13510798887693184.f17a0156-31bb-4cd8-a528-bce93ba02099.a38af496-4d9b-4831-828e-f942c6126042?mode=crop&q=90&h=167&w=167&format=jpg&background=%23000000\'>' +
 							 '<style>' +
 							 'html { margin: 0; }' +
 							 'body { margin: 0; font-family: Consolas, Courier, Monospace; font-size: 100px; text-align: center; }' +
