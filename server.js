@@ -229,6 +229,11 @@ app.post('/webhook', function(req, res) {
 										console.log('IFTTT Success!');
 									});
 									
+									request.post('https://api.pushover.net/1/messages.json?token=' + process.env.PUSHOVER_TOKEN + '&user=' + process.env.PUSHOVER_USER + '&message=' + body.fuel_level_percent + '%25',
+									function(err, response, body) {
+										console.log('Pushover Success!');
+									});
+									
 									console.log ('Updating lastFuelReading to ' + body.fuel_level_percent + '%');
 									client.set('lastFuelReading', body.fuel_level_percent);
 								} else {
