@@ -116,7 +116,7 @@ app.get('/', function(req, res) {
 					},
 					json: true
 				}, function(error, response, body) {
-					console.log('error: ' + JSON.stringify(errorJSON.stringify());
+					console.log('error: ' + JSON.stringify(errorJSON.stringify()));
 					console.log('response: ' + JSON.stringify(response));
 					console.log('body: ' + JSON.stringify(body));
 					if (!error) {
