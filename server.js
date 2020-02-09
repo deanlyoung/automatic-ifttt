@@ -112,11 +112,11 @@ app.get('/', function(req, res) {
 				request.get({
 					uri: 'https://api.automatic.com/vehicle/' + vehicle_id + '/',
 					headers: {
-						Authorization: 'Bearer ' + req.session.token.token.access_token
+						Authorization: 'Bearer ' + accessToken
 					},
 					json: true
 				}, function(error, response, body) {
-					console.log('error: ' + JSON.stringify(errorJSON.stringify()));
+					console.log('error: ' + JSON.stringify(error));
 					console.log('response: ' + JSON.stringify(response));
 					console.log('body: ' + JSON.stringify(body));
 					if (!error) {
@@ -210,12 +210,12 @@ app.post('/webhook', function(req, res) {
 					request.get({
 						uri: 'https://api.automatic.com/vehicle/' + payload.vehicle.id + '/',
 						headers: {
-							Authorization: 'Bearer ' + accessToken || req.session.token.token.access_token
+							Authorization: 'Bearer ' + accessToken
 						},
 						json: true
 					}, function(error, response, body) {
 						if (error) {
-							
+							console.log('error: ' + JSONstringify(error));
 						} else {
 							if (body.fuel_level_percent == null) {
 								console.log('Could not find current fuel percentage, skipping IFTTT');
