@@ -215,17 +215,7 @@ app.post('/webhook', function(req, res) {
 						json: true
 					}, function(error, response, body) {
 						if (error) {
-							client.get('refreshToken', function(err, refreshToken) {
-								console.log('refresh token: ', refreshToken);
-								
-								request.post({
-										uri: 'https://accounts.automatic.com/oauth/accesstoken/',
-										json: true
-									}, function(error, response, body) {
-										
-									}
-								});
-							});
+							
 						} else {
 							if (body.fuel_level_percent == null) {
 								console.log('Could not find current fuel percentage, skipping IFTTT');
