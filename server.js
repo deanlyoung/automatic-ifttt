@@ -77,8 +77,7 @@ app.get('/redirect', (req, res) => {
 
   oauth2.authCode.getToken({
     code: code,
-	grant_type: refresh_token,
-	refresh_token: refreshToken
+	grant_type: access_token
   }, saveToken);
 });
 
