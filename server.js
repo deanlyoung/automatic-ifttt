@@ -19,23 +19,23 @@ const AUTOMATIC_CLIENT_ID = process.env.AUTOMATIC_CLIENT_ID || 'your-automatic-c
 const AUTOMATIC_CLIENT_SECRET = process.env.AUTOMATIC_CLIENT_SECRET || 'your-automatic-client-secret';
 
 const oauth2 = require('simple-oauth2')({
-  clientID: AUTOMATIC_CLIENT_ID,
-  clientSecret: AUTOMATIC_CLIENT_SECRET,
-  site: 'https://accounts.automatic.com',
-  tokenPath: '/oauth/access_token'
+	clientID: AUTOMATIC_CLIENT_ID,
+	clientSecret: AUTOMATIC_CLIENT_SECRET,
+	site: 'https://accounts.automatic.com',
+	tokenPath: '/oauth/access_token'
 });
 
 // Authorization uri definition
 const authorizationUri = oauth2.authCode.authorizeURL({
-  scope: 'scope:user:profile scope:trip scope:location scope:vehicle:profile scope:vehicle:events scope:behavior'
+	scope: 'scope:user:profile scope:trip scope:location scope:vehicle:profile scope:vehicle:events scope:behavior'
 });
 
 // Enable sessions
 app.use(session({
-  secret: 'keyboard cat',
-  resave: false,
-  saveUninitialized: true,
-  cookie: { secure: true }
+	secret: 'keyboard cat',
+	resave: false,
+	saveUninitialized: true,
+	cookie: { secure: true }
 }));
 
 // Initial page redirecting to Automatic's oAuth page
@@ -45,48 +45,58 @@ app.get('/auth', (req, res) => {
 
 // Callback service parsing the authorization token and asking for the access token
 app.get('/redirect', (req, res) => {
-  const code = req.query.code;
+	const code = req.query.code;
+	if (code == null) {
+		client.get('refreshToken', function(err, refreshToken) {
+			oauth2.authCode.refresh({
+				grant_type: 'refresh_token',
+				refresh_token: refreshToken
+			}, saveToken);
+			console.log('refresh token: ', refreshToken);
+		});
+	} else {
+		oauth2.authCode.getToken({
+			code: code
+		}, saveToken);
+	}
 
-  function saveToken(error, result) {
-    if (error) {
-      console.log('Access token error', error.message);
-      res.send('Access token error: ' +  error.message);
-      return;
-    }
+	function saveToken(error, result) {
+		if (error) {
+			console.log('Access token error', error.message);
+			res.send('Access token error: ' +  error.message);
+			return;
+		}
+		
+		// Attach `token` to the user's session for later use
+		// This is where you could save the `token` to a database for later use
+		req.session.token = oauth2.accessToken.create(result);
+		console.log(req.session.token);
+		
+		client.set('refreshToken', req.session.token.token.refresh_token);
+		client.get('refreshToken', function(err, refreshToken) {
+			refreshToken = refreshToken;
+			console.log('refresh token: ', refreshToken);
+		});
+		client.set('accessToken', req.session.token.token.access_token);
+		client.get('accessToken', function(err, accessToken) {
+			accessToken = accessToken;
+			console.log('access token: ', accessToken);
+		});
+		
+		res.redirect('/');
+	}
 
-    // Attach `token` to the user's session for later use
-    // This is where you could save the `token` to a database for later use
-    req.session.token = oauth2.accessToken.create(result);
-    console.log(req.session.token);
-	
-	client.set('refreshToken', req.session.token.token.refresh_token);
-	client.get('refreshToken', function(err, refreshToken) {
-		refreshToken = refreshToken;
-		console.log('refresh token: ', refreshToken);
-	});
-	client.set('accessToken', req.session.token.token.access_token);
-	client.get('accessToken', function(err, accessToken) {
-		accessToken = accessToken;
-		console.log('access token: ', accessToken);
-	});
-	
-    res.redirect('/');
-  }
-
-  oauth2.authCode.getToken({
-	  code: code
-  }, saveToken);
 });
 
 app.get('/welcome', (req, res) => {
-  if (req.session.token) {
-    // Display token to authenticated user
-    console.log('Automatic access token', req.session.token.token.access_token);
-    res.send('You are logged in.<br>Access Token: ' + req.session.token.token.access_token);
-  } else {
-    // No token, so redirect to login
-    res.redirect('/');
-  }
+	if (req.session.token) {
+		// Display token to authenticated user
+		console.log('Automatic access token', req.session.token.token.access_token);
+		res.send('You are logged in.<br>Access Token: ' + req.session.token.token.access_token);
+	} else {
+		// No token, so redirect to login
+		res.redirect('/');
+	}
 });
 
 app.get('/', function(req, res) {
@@ -117,6 +127,18 @@ app.get('/', function(req, res) {
 					console.log('body: ' + JSON.stringify(body));
 					if (!error) {
 						accessToken = accessToken;
+					} else if (response.body.error == 'err_unauthorized') {
+						client.get('refreshToken', function(err, refreshToken) {
+								console.log('using refresh token: ', refreshToken);
+								
+								request.post({
+										uri: 'https://accounts.automatic.com/oauth/accesstoken/',
+										json: true
+									}, function(error, response, body) {
+										
+									}
+								});
+							});
 					} else {
 						accessToken = null;
 					}
