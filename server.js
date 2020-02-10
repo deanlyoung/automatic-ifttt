@@ -48,17 +48,19 @@ app.get('/auth', (req, res) => {
 // Callback service parsing the authorization token and asking for the access token
 app.get('/redirect', (req, res) => {
 	const code = req.query.code;
-	if (code == null) {
-		client.get('refreshToken', function(err, refreshToken) {
-			oauth2.accessToken.refresh({
-				grant_type: 'refresh_token',
-				refresh_token: refreshToken
-			}, saveToken);
-		});
-	} else {
+	const error = req.query.error;
+	if (code) {
 		oauth2.authCode.getToken({
 			code: code
 		}, saveToken);
+	} else if (error) {
+		client.get('refreshToken', function(err, refreshToken) {
+			var params = {
+				grant_type: 'refresh_token',
+				refresh_token: refreshToken.token.refresh_token
+			};
+			oauth2.accessToken.refresh(params, saveToken);
+		});
 	}
 
 	function saveToken(error, result) {
