@@ -53,7 +53,7 @@ app.get('/redirect', (req, res) => {
 		oauth2.authCode.getToken({
 			code: code
 		}, saveToken);
-	} else if (error) {
+	} else if (error || (body.error == 'err_unauthorized')) {
 		res.redirect('/auth');
 	}
 
@@ -92,12 +92,11 @@ app.get('/welcome', (req, res) => {
 		res.send('You are logged in.<br>Access Token: ' + req.session.token.token.access_token);
 	} else {
 		// No token, so redirect to login
-		res.redirect('/');
+		res.redirect('/auth');
 	}
 });
 
 app.get('/', function(req, res) {
-	
 	client.get('lastFuelReading', function(err, lastFuelReading) {
 		if (lastFuelReading == null) {
 			console.log('Unable to retrieve lastFuelReading, setting to 100%');
@@ -124,7 +123,7 @@ app.get('/', function(req, res) {
 					console.log('body: ' + JSON.stringify(body));
 					if (!error) {
 						accessToken = accessToken;
-					} else if (response.body.error == 'err_unauthorized') {
+					} else if (body.error == 'err_unauthorized') {
 						res.redirect('/auth');
 					} else {
 						client.get('refreshToken', function(err, refreshToken) {
