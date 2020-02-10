@@ -105,7 +105,31 @@ app.get('/refresh', (req, res) => {
 		console.log('refresh token: ', refreshToken);
 	});
 	
-	res.redirect('/');
+	function saveToken(error, result) {
+		if (error) {
+			console.log('Access token error', error.message);
+			res.send('Access token error: ' +  error.message);
+			return;
+		}
+		
+		// Attach `token` to the user's session for later use
+		// This is where you could save the `token` to a database for later use
+		req.session.token = oauth2.accessToken.create(result);
+		console.log(req.session.token);
+		
+		client.set('refreshToken', req.session.token.token.refresh_token);
+		client.get('refreshToken', function(err, refreshToken) {
+			refreshToken = refreshToken;
+			console.log('refresh token: ', refreshToken);
+		});
+		client.set('accessToken', req.session.token.token.access_token);
+		client.get('accessToken', function(err, accessToken) {
+			accessToken = accessToken;
+			console.log('access token: ', accessToken);
+		});
+		
+		res.redirect('/');
+	}
 });
 
 app.get('/', function(req, res) {
