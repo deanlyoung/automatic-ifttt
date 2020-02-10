@@ -54,12 +54,7 @@ app.get('/redirect', (req, res) => {
 			code: code
 		}, saveToken);
 	} else if (error) {
-		client.get('refreshToken', function(err, refreshToken) {
-			var params = {
-				refresh_token: refreshToken
-			};
-			oauth2.accessToken.refresh(params, saveToken);
-		});
+		res.redirect('/auth');
 	}
 
 	function saveToken(error, result) {
