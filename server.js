@@ -100,7 +100,7 @@ app.get('/refresh', (req, res) => {
 	client.get('refreshToken', function(err, refreshToken) {
 		console.log('refresh token: ', refreshToken);
 		var params = {
-			refresh_token: refreshToken,
+			refresh_token: refreshToken.token.token.refresh_token,
 			grant_type: 'refresh_token'
 		};
 		oauth2.accessToken.refresh(params, saveToken);
