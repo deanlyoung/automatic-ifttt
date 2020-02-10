@@ -26,17 +26,19 @@ const oauth2 = require('simple-oauth2')({
 });
 
 // Authorization uri definition
-const authorizationUri = oauth2.authCode.authorizeURL({
+const authorizationUri = oauth2.authorizationCode.authorizeURL({
 	scope: 'scope:user:profile scope:trip scope:location scope:vehicle:profile scope:vehicle:events scope:behavior'
 });
 
 // Enable sessions
-app.use(session({
-	secret: 'keyboard cat',
-	resave: false,
-	saveUninitialized: true,
-	cookie: { secure: true }
-}));
+app.use(
+	session({
+		secret: 'keyboard cat',
+		resave: false,
+		saveUninitialized: true,
+		cookie: { secure: true }
+	})
+);
 
 // Initial page redirecting to Automatic's oAuth page
 app.get('/auth', (req, res) => {
@@ -48,14 +50,13 @@ app.get('/redirect', (req, res) => {
 	const code = req.query.code;
 	if (code == null) {
 		client.get('refreshToken', function(err, refreshToken) {
-			oauth2.authCode.refresh({
+			oauth2.authorizationCode.refresh({
 				grant_type: 'refresh_token',
 				refresh_token: refreshToken
 			}, saveToken);
-			console.log('refresh token: ', refreshToken);
 		});
 	} else {
-		oauth2.authCode.getToken({
+		oauth2.authorizationCode.getToken({
 			code: code
 		}, saveToken);
 	}
@@ -129,18 +130,12 @@ app.get('/', function(req, res) {
 						accessToken = accessToken;
 					} else if (response.body.error == 'err_unauthorized') {
 						client.get('refreshToken', function(err, refreshToken) {
-								console.log('using refresh token: ', refreshToken);
-								
-								request.post({
-										uri: 'https://accounts.automatic.com/oauth/accesstoken/',
-										json: true
-									}, function(error, response, body) {
-										
-									}
-								});
-							});
-					} else {
-						accessToken = null;
+							oauth2.authorizationCode.refresh({
+								grant_type: 'refresh_token',
+								refresh_token: refreshToken
+							}, saveToken);
+							console.log('refresh token: ', refreshToken);
+						});
 					}
 				});
 				
@@ -198,6 +193,32 @@ app.get('/', function(req, res) {
 			});
 		});
 	});
+	
+	function saveToken(error, result) {
+		if (error) {
+			console.log('Access token error', error.message);
+			res.send('Access token error: ' +  error.message);
+			return;
+		}
+		
+		// Attach `token` to the user's session for later use
+		// This is where you could save the `token` to a database for later use
+		req.session.token = oauth2.accessToken.create(result);
+		console.log(req.session.token);
+		
+		client.set('refreshToken', req.session.token.token.refresh_token);
+		client.get('refreshToken', function(err, refreshToken) {
+			refreshToken = refreshToken;
+			console.log('refresh token: ', refreshToken);
+		});
+		client.set('accessToken', req.session.token.token.access_token);
+		client.get('accessToken', function(err, accessToken) {
+			accessToken = accessToken;
+			console.log('access token: ', accessToken);
+		});
+		
+		res.redirect('/');
+	}
 });
 
 app.post('/webhook', function(req, res) {
