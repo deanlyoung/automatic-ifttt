@@ -55,7 +55,9 @@ app.get('/redirect', (req, res) => {
 		}, saveToken);
 	} else if (error) {
 		client.get('refreshToken', function(err, refreshToken) {
-			var params;
+			var params = {
+				refresh_token: refreshToken
+			};
 			oauth2.accessToken.refresh(params, saveToken);
 		});
 	}
@@ -129,10 +131,10 @@ app.get('/', function(req, res) {
 						accessToken = accessToken;
 					} else if (response.body.error == 'err_unauthorized') {
 						client.get('refreshToken', function(err, refreshToken) {
-							oauth2.accessToken.refresh({
-								grant_type: 'refresh_token',
+							var params = {
 								refresh_token: refreshToken
-							}, saveToken);
+							};
+							oauth2.accessToken.refresh(params, saveToken);
 							console.log('refresh token: ', refreshToken);
 						});
 					}
