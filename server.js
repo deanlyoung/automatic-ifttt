@@ -50,7 +50,7 @@ app.get('/redirect', (req, res) => {
 	const code = req.query.code;
 	if (code == null) {
 		client.get('refreshToken', function(err, refreshToken) {
-			oauth2.authCode.refresh({
+			oauth2.accessToken.refresh({
 				grant_type: 'refresh_token',
 				refresh_token: refreshToken
 			}, saveToken);
@@ -130,7 +130,7 @@ app.get('/', function(req, res) {
 						accessToken = accessToken;
 					} else if (response.body.error == 'err_unauthorized') {
 						client.get('refreshToken', function(err, refreshToken) {
-							oauth2.authCode.refresh({
+							oauth2.accessToken.refresh({
 								grant_type: 'refresh_token',
 								refresh_token: refreshToken
 							}, saveToken);
