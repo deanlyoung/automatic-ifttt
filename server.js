@@ -26,7 +26,7 @@ const oauth2 = require('simple-oauth2')({
 });
 
 // Authorization uri definition
-const authorizationUri = oauth2.authorizationCode.authorizeURL({
+const authorizationUri = oauth2.authCode.authorizeURL({
 	scope: 'scope:user:profile scope:trip scope:location scope:vehicle:profile scope:vehicle:events scope:behavior'
 });
 
@@ -50,13 +50,13 @@ app.get('/redirect', (req, res) => {
 	const code = req.query.code;
 	if (code == null) {
 		client.get('refreshToken', function(err, refreshToken) {
-			oauth2.authorizationCode.refresh({
+			oauth2.authCode.refresh({
 				grant_type: 'refresh_token',
 				refresh_token: refreshToken
 			}, saveToken);
 		});
 	} else {
-		oauth2.authorizationCode.getToken({
+		oauth2.authCode.getToken({
 			code: code
 		}, saveToken);
 	}
@@ -130,7 +130,7 @@ app.get('/', function(req, res) {
 						accessToken = accessToken;
 					} else if (response.body.error == 'err_unauthorized') {
 						client.get('refreshToken', function(err, refreshToken) {
-							oauth2.authorizationCode.refresh({
+							oauth2.authCode.refresh({
 								grant_type: 'refresh_token',
 								refresh_token: refreshToken
 							}, saveToken);
