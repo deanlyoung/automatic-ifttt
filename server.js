@@ -125,6 +125,8 @@ app.get('/', function(req, res) {
 					if (!error) {
 						accessToken = accessToken;
 					} else if (response.body.error == 'err_unauthorized') {
+						res.redirect('/auth');
+					} else {
 						client.get('refreshToken', function(err, refreshToken) {
 							var params = {
 								refresh_token: refreshToken
