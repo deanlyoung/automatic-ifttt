@@ -46,8 +46,6 @@ app.get('/auth', (req, res) => {
 // Callback service parsing the authorization token and asking for the access token
 app.get('/redirect', (req, res) => {
   const code = req.query.code;
-  var refreshToken;
-  var accessToken;
 
   function saveToken(error, result) {
     if (error) {
@@ -76,8 +74,7 @@ app.get('/redirect', (req, res) => {
   }
 
   oauth2.authCode.getToken({
-    code: code,
-	grant_type: access_token
+	  code: code
   }, saveToken);
 });
 
