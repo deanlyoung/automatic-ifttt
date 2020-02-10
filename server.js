@@ -96,6 +96,18 @@ app.get('/welcome', (req, res) => {
 	}
 });
 
+app.get('/refresh', (req, res) => {
+	client.get('refreshToken', function(err, refreshToken) {
+		var params = {
+			refresh_token: refreshToken
+		};
+		oauth2.accessToken.refresh(params, saveToken);
+		console.log('refresh token: ', refreshToken);
+	});
+	
+	res.redirect('/');
+});
+
 app.get('/', function(req, res) {
 	client.get('lastFuelReading', function(err, lastFuelReading) {
 		if (lastFuelReading == null) {
