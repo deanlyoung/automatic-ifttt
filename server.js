@@ -55,10 +55,7 @@ app.get('/redirect', (req, res) => {
 		}, saveToken);
 	} else if (error) {
 		client.get('refreshToken', function(err, refreshToken) {
-			var params = {
-				grant_type: 'refresh_token',
-				refresh_token: refreshToken.token.refresh_token
-			};
+			var params;
 			oauth2.accessToken.refresh(params, saveToken);
 		});
 	}
