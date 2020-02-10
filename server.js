@@ -98,11 +98,12 @@ app.get('/welcome', (req, res) => {
 
 app.get('/refresh', (req, res) => {
 	client.get('refreshToken', function(err, refreshToken) {
+		console.log('refresh token: ', refreshToken);
 		var params = {
-			refresh_token: refreshToken
+			refresh_token: refreshToken,
+			grant_type: 'refresh_token'
 		};
 		oauth2.accessToken.refresh(params, saveToken);
-		console.log('refresh token: ', refreshToken);
 	});
 	
 	function saveToken(error, result) {
@@ -162,13 +163,7 @@ app.get('/', function(req, res) {
 					} else if (body.error == 'err_unauthorized') {
 						res.redirect('/auth');
 					} else {
-						client.get('refreshToken', function(err, refreshToken) {
-							var params = {
-								refresh_token: refreshToken
-							};
-							oauth2.accessToken.refresh(params, saveToken);
-							console.log('refresh token: ', refreshToken);
-						});
+						res.redirect('/refresh');
 					}
 				});
 				
@@ -288,6 +283,11 @@ app.post('/webhook', function(req, res) {
 					}, function(error, response, body) {
 						if (error) {
 							console.log('error: ' + JSONstringify(error));
+						} else if (body.error == 'err_unauthorized') {
+							request.post('https://api.pushover.net/1/messages.json?token=' + process.env.PUSHOVER_TOKEN + '&user=' + process.env.PUSHOVER_USER + '&message=Refresh%20token',
+							function(err, response, body) {
+								console.log('Pushover Error Message Success!');
+							});
 						} else {
 							if (body.fuel_level_percent == null) {
 								console.log('Could not find current fuel percentage, skipping IFTTT');
